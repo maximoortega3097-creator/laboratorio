@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Laboratorio de privacidad digital</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #101827;
+            color: white;
+            text-align: center;
+            padding: 40px 15px;
+        }
+
+        .contenedor {
+            max-width: 500px;
+            margin: auto;
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            color: #38bdf8;
+        }
+
+        button {
+            padding: 14px 25px;
+            background: #0284c7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #0369a1;
+        }
+
+        #resultado {
+            margin-top: 25px;
+            color: #4ade80;
+        }
+
+        .aviso {
+            font-size: 13px;
+            color: #cbd5e1;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>Laboratorio de privacidad digital</h1>
+
+    <p>
+        ¿Qué información puede conocer una página web
+        cuando la visitas?
+    </p>
+
+    <p>
+        Esta actividad educativa mostrará a tu profesor
+        algunos datos técnicos de tu conexión y navegador.
+    </p>
+
+    <p>
+        Solo se enviarán los datos cuando aceptes
+        participar y pulses el botón.
+    </p>
+
+    <label>
+        <input type="checkbox" id="consentimiento">
+        Acepto participar en la demostración.
+    </label>
+
+    <br><br>
+
+    <button onclick="participar()">
+        Participar en la demostración
+    </button>
+
+    <div id="resultado"></div>
+
+    <p class="aviso">
+        Los datos se utilizarán exclusivamente para
+        esta actividad educativa. No se solicita
+        acceso a la ubicación GPS.
+    </p>
+
+</div>
+
+<script>
+
+async function participar() {
+
+    const resultado = document.getElementById("resultado");
+
+    const consentimiento =
+        document.getElementById("consentimiento");
+
+    if (!consentimiento.checked) {
+        resultado.textContent =
+            "Primero debes aceptar participar.";
+        return;
+    }
+
+    resultado.textContent = "Enviando información...";
+
+    const datos = {
+
+        navegador: navigator.userAgent,
+
+        plataforma: navigator.platform,
+
+        idioma: navigator.language,
+
+        movil: /Android|iPhone|iPad|Mobile/i.test(
+            navigator.userAgent
+        ),
+
+        pantalla: screen.width + "x" + screen.height
+
+    };
+
+    try {
+
+        const respuesta = await fetch("/registrar", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(datos)
+
+        });
+
+        if (!respuesta.ok) {
+            throw new Error("Error del servidor");
+        }
+
+        resultado.textContent =
+            "¡Participación registrada correctamente!";
+
+    } catch (error) {
+
+        resultado.textContent =
+            "No se pudo conectar con el servidor. Intenta nuevamente.";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
